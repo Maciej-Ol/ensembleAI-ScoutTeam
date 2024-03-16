@@ -16,9 +16,9 @@ class TaskDataset(Dataset):
         id_ = self.ids[index]
         img = self.imgs[index]
         if not self.transform is None:
-            img = self.transform(img)
+            transformed_img = self.transform(img.convert("RGB"))
         label = self.labels[index]
-        return id_, img, label
+        return id_, img, transformed_img, label
 
     def __len__(self):
         return len(self.ids)

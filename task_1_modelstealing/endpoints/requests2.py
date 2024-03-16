@@ -101,7 +101,7 @@ def model_stealing(path_to_png_file: str):
         if response.status_code == 200:
             representation = response.json()["representation"]
             print("Request ok")
-            print(representation)
+            return representation
         else:
             raise Exception(
                 f"Model stealing failed. Code: {response.status_code}, content: {response.json()}"
@@ -143,6 +143,6 @@ def model_stealing_reset():
 # sybil_submit("examplesubmission.npz", "binary")
 # sybil_reset("binary")
 # defense_submit("exampletransform.npz")
-# model_stealing("testing/test.png")
+print(model_stealing("task_1_modelstealing\\data\\images\\0.png"))
 # model_stealing_submit("testing/example_submission.onnx")
 # model_stealing_reset()

@@ -1,35 +1,38 @@
 import torch
+from ModelToSteal import ModelToStealOfficial, ModelToStealMockup
+from data_steal.solvedataset import SaveSolveDataset
+from  taskdataset import TaskDataset
 
-data_path = "../data/ExampleModelStealingPub.pt"
+data_path = "./data/ModelStealingPub.pt"
 N = 100
 
-def prepare_dataset():
-    # TODO Popracuj nad data augmentation
-    return torch.load(data_path)
+class DataStealer():
+    def __init__(self, model_to_steal, path_to_images, path_to_vectors):
+        self.model_to_steal = model_to_steal
+        self.path_to_images = path_to_images
+        
+        self.iterations_to_denoise = 1
+        self.save_solve_dataset = SaveSolveDataset(path_to_vectors)
 
-# Przygotuj pierwsze 10 obrazków na state-of-art do sprawdzania noise
-def prepare_state_of_art(dataset):
-    # TODO
-    pass
+    def prepare_dataloader(self):
+        # TODO Popracuj nad data augmentation
+        dataset = torch.load(self.path_to_images)
 
-# Wysyłaj kolejne N obrazków po K razy, żeby zredukować szum
-def send_data(dataset, K):
-    # TODO
-    pass
+        # return torch.utils.data.DataLoader(dataset, **dataloader_kwargs)
+        return dataset
 
-# Wielokrotnie wysyłaj pliki ze state-of-art żeby oszacować noise
-def estimate_noise(state_of_art):
-    # TODO
-    pass
 
-def data_steal():
-    K = 1
+    def get_one_embedding(self, id, img, label):
+        # TODO Zrób denoise
+        encoding = self.model_to_steal.get_embeddings(img)
+        self.save_solve_dataset.add(id, img, label, encoding)
 
-    # Spreparuj dataset do wykradania
-    dataset = prepare_dataset()
+    def encode_data(self):
+        dataloader = self.prepare_dataloader()
 
-    # Przygotuj pierwsze 10 plikow na state-of-the-art
+        id, img,label = dataloader[0]
+        self.get_one_embedding(id, img, label)
+        # for i, (id, img, label) in enumerate(dataloader):
+        #     self.get_one_embedding(id, img, label)
 
-    # Wysyłaj kolejne 100 obrazków po K razy ze spreparowanego datasetu
-
-    # Oszacuj wariancję na podstawie state-of-art i zaktualizuj K
+        self.save_solve_dataset.save()

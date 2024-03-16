@@ -10,6 +10,10 @@ class ModelToSteal:
     def get_embeddings(self, image, id=0):
         pass
 
+class ModelToStealRandomMockup(ModelToSteal):
+    def get_embeddings(self, image: Image):
+        return torch.rand(512)
+
 class ModelToStealMockup(ModelToSteal):
     def __init__(self):
         self.transform = transforms.Compose([
