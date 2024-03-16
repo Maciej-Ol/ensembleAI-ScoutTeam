@@ -15,7 +15,7 @@ class StealingModel(nn.Module):
         #                     "resnet34":  models.resnet34(pretrained=False, num_classes=out_dim)
         #                     ,"resnet50": models.resnet50(pretrained=False, num_classes=out_dim)}
 
-        self.backbone = models.resnet50(weights=None)
+        self.backbone = models.resnet18(weights=None)
         self.backbone.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.backbone.fc = nn.Linear(2048, 512)
 

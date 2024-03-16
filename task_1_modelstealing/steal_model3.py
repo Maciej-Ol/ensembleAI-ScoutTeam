@@ -4,6 +4,7 @@ import torch.nn as nn
 from ModelToSteal import ModelToSteal, ModelToStealMockup, ModelToStealOfficial, ModelToStealRandomMockup
 from torchvision import transforms
 from taskdataset import TaskDataset
+from sure_taskdataset import SureTaskDataset
 
 import torch.nn.functional as F
 
@@ -38,7 +39,7 @@ def build_datasets(args):
     dataset: TaskDataset = torch.load("task_1_modelstealing/data/ModelStealingPub.pt")
     dataset.transform = transforms.Compose([transforms.ToTensor()])
 
-    sure_dataset = torch.load("task_1_modelstealing/data/sure/sure.pt")
+    sure_dataset: SureTaskDataset = torch.load("task_1_modelstealing/data/sure/sure.pt")
 
     return dataset, sure_dataset
 
@@ -58,14 +59,21 @@ def build_loss_func(args):
     return nn.MSELoss()
     # return nn.MSELoss().to(args['device'])
 
-def train(args, dataset: TaskDataset, sure_dataset, stealing_model: StealingModel, victim_model: ModelToSteal, optimizer, loss_func):
+def train(args: int, dataset: TaskDataset, sure_dataset, stealing_model: StealingModel, victim_model: ModelToSteal, optimizer, loss_func):
     stealing_model.train()
+    print("start training")
     for epoch in range(args["epochs"]):
-        for batch_idx, (id, image, transformed_img, label) in enumerate(dataset[:200]):
+        print(f"start epoch {epoch}")
+        for batch_idx, (id, image, transformed_img, label) in enumerate(dataset):
+            if batch_idx > 200:
+                break
             # image = image.to(args.device)
             image = image.convert("RGB")
             # embbeding = torch.tensor(victim_model.get_embeddings(image, id)).to(args['device'])
-            embbeding = torch.tensor(victim_model.get_denoised_embedding(image, id)).to(args['device'])
+            print(f"start get denoised")
+            # embbeding = torch.tensor(victim_model.get_denoised_embedding(image, id)).to(args['device'])
+            embbeding = torch.tensor(victim_model.get_embeddings(image, id)).to(args['device'])
+            print(f"end get denoised")
 
             file_path = f'task_1_modelstealing/data/emb/epoch_{epoch}_{id}.pt'
 
@@ -87,8 +95,8 @@ def train(args, dataset: TaskDataset, sure_dataset, stealing_model: StealingMode
                 
             
             if batch_idx % args["check_noise_interval"] == 0:
-                image = sure_dataset.imgs[0]
-                embedding = sure_dataset.embeddings[0]
+                image = sure_dataset["images"][0]
+                embedding = sure_dataset["embeddings"][0]
                 i = victim_model.estimate_noise(image, embedding)
                 print(f'{i} iterations to denoise')
 

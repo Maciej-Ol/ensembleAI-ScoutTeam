@@ -76,7 +76,7 @@ class ModelToStealOfficial(ModelToSteal):
     def get_denoised_embedding(self, image: Image, id = 0):
         encoding = 0
         for _ in range(self.iterations_to_denoise):
-            encoding += self.get_embeddings(image) / self.iterations_to_denoise
+            encoding += torch.tensor(self.get_embeddings(image, id)) / self.iterations_to_denoise
             
         return encoding
     
