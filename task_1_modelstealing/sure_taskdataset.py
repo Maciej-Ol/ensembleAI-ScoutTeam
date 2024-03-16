@@ -1,15 +1,14 @@
 from torch.utils.data import Dataset
 from typing import Tuple
 import torch
-import random
 
 
-class TaskDataset(Dataset):
+class SureTaskDataset(Dataset):
     def __init__(self, transform=None):
 
         self.ids = []
         self.imgs = []
-        self.labels = []
+        self.embeddings = []
 
         self.transform = transform
 
@@ -23,15 +22,3 @@ class TaskDataset(Dataset):
 
     def __len__(self):
         return len(self.ids)
-
-    def shuffle(self):
-        random.seed(1241251)
-
-        # Generate a shuffling order
-        shuffling_order = list(range(len(self.ids)))
-        random.shuffle(shuffling_order)
-
-        # Shuffle all three lists using the same order
-        self.ids = [self.ids[i] for i in shuffling_order]
-        self.imgs = [self.imgs[i] for i in shuffling_order]
-        self.labels = [self.labels[i] for i in shuffling_order]

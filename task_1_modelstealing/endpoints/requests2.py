@@ -2,14 +2,14 @@
 # PS once we find you, ban won't be your biggest trouble ;P
 
 from typing import List
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 
 import numpy as np
 import requests
 import os
 
-load_dotenv()
+# load_dotenv()
 
 SERVER_URL = os.getenv("SERVER_URL", default="http://34.71.138.79:9090")
 TEAM_TOKEN = os.getenv("TEAM_TOKEN", default="l5pvMfL4ZID1QHmn")
@@ -100,7 +100,7 @@ def model_stealing(path_to_png_file: str):
         response = requests.get(url, files={"file": f}, headers={"token": TEAM_TOKEN})
         if response.status_code == 200:
             representation = response.json()["representation"]
-            print("Request ok")
+            # print("Request ok")
             return representation
         else:
             raise Exception(
@@ -143,6 +143,6 @@ def model_stealing_reset():
 # sybil_submit("examplesubmission.npz", "binary")
 # sybil_reset("binary")
 # defense_submit("exampletransform.npz")
-print(model_stealing("task_1_modelstealing\\data\\images\\0.png"))
-# model_stealing_submit("testing/example_submission.onnx")
-# model_stealing_reset()
+# print(model_stealing("task_1_modelstealing\\data\\images\\0.png"))
+# model_stealing_submit("task_1_modelstealing/models/submission_2999_0.onnx")
+model_stealing_reset()

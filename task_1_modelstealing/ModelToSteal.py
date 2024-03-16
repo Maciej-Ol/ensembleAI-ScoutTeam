@@ -1,6 +1,6 @@
 import torchvision.models as models
 import torch
-from endpoints.model_stealing import model_stealing
+from endpoints.requests2 import model_stealing
 from torchvision import transforms
 from  taskdataset import TaskDataset
 
@@ -11,8 +11,13 @@ class ModelToSteal:
         pass
 
 class ModelToStealRandomMockup(ModelToSteal):
-    def get_embeddings(self, image: Image):
-        return torch.rand(512)
+    def __init__(self):
+        self.mapping = {}
+
+    def get_embeddings(self, image: Image, id):
+        if id not in self.mapping:
+            self.mapping[id] = torch.rand(512)
+        return self.mapping[id]
 
 class ModelToStealMockup(ModelToSteal):
     def __init__(self):
@@ -44,10 +49,36 @@ class ModelToStealMockup(ModelToSteal):
         return self.model(self.transform(image).reshape(1, 3, 32, 32))
 
 class ModelToStealOfficial(ModelToSteal):
+    def __init__(self, max_noise = 1e-5):
+        self.max_noise = max_noise
+        self.iterations_to_denoise = 1
+
     def get_embeddings(self, image: Image, id = 0):
-        image.save(f"data/images/{id}.png")
-        result = model_stealing(f"data/images/{id}.png")
+        image.save(f"task_1_modelstealing/data/images/{id}.png")
+        result = model_stealing(f"task_1_modelstealing/data/images/{id}.png")
         return result
+   
+    def estimate_noise(self, original_img, original_vector):
+        i = 1
+        encoding = self.get_embeddings(original_img)
+        dist = (original_vector - encoding).pow(2).sum().sqrt()
+    
+        while dist > self.max_noise:
+            next_encoding = self.get_embeddings(original_img)
+            encoding += next_encoding / i
+            encoding = encoding * i / (i+1)
+            dist = (original_vector - encoding).pow(2).sum().sqrt()
+            i += 1
+
+        self.iterations_to_denoise = i
+        return i
+
+    def get_denoised_embedding(self, image: Image, id = 0):
+        encoding = 0
+        for _ in range(self.iterations_to_denoise):
+            encoding += self.get_embeddings(image) / self.iterations_to_denoise
+            
+        return encoding
     
 if __name__ == "__main__":
     model = ModelToStealMockup()

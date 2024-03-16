@@ -11,19 +11,19 @@ from StealingModel import StealingModel
 
 def main():
     torch.device('cuda:0')
-    args = {"epochs": 5, "log_interval": 1, "save_interval": 100}
+    args = {"epochs": 5, "log_interval": 1, "save_interval": 100, "check_noise_interval": 50}
 
     # args['device'] = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     args['device'] = "cpu"
     stealing_model = build_stealing_model(args).to(args['device'])
     victim_model = build_victim_model(args)
-    dataset = build_dataset(args)
+    dataset, sure_dataset = build_datasets(args)
     optimizer = build_optimizer(args, stealing_model)
     loss_func = build_loss_func(args)
 
-    
+    dataset.shuffle()
 
-    train(args, dataset, stealing_model, victim_model, optimizer, loss_func)
+    train(args, dataset, sure_dataset, stealing_model, victim_model, optimizer, loss_func)
 
 def build_victim_model(args) -> ModelToSteal:
     return ModelToStealOfficial()
@@ -34,11 +34,13 @@ def build_stealing_model(args):
 
     return stealing_model
 
-def build_dataset(args):
+def build_datasets(args):
     dataset: TaskDataset = torch.load("task_1_modelstealing/data/ModelStealingPub.pt")
     dataset.transform = transforms.Compose([transforms.ToTensor()])
 
-    return dataset
+    sure_dataset = torch.load("task_1_modelstealing/data/sure/sure.pt")
+
+    return dataset, sure_dataset
 
 def build_optimizer(args, stealing_model):
     lr = 0.1
@@ -56,13 +58,14 @@ def build_loss_func(args):
     return nn.MSELoss()
     # return nn.MSELoss().to(args['device'])
 
-def train(args, dataset: TaskDataset, stealing_model: StealingModel, victim_model: ModelToSteal, optimizer, loss_func):
+def train(args, dataset: TaskDataset, sure_dataset, stealing_model: StealingModel, victim_model: ModelToSteal, optimizer, loss_func):
     stealing_model.train()
     for epoch in range(args["epochs"]):
-        for batch_idx, (id, image, transformed_img, label) in enumerate(dataset):
+        for batch_idx, (id, image, transformed_img, label) in enumerate(dataset[:200]):
             # image = image.to(args.device)
             image = image.convert("RGB")
-            embbeding = torch.tensor(victim_model.get_embeddings(image, id)).to(args['device'])
+            # embbeding = torch.tensor(victim_model.get_embeddings(image, id)).to(args['device'])
+            embbeding = torch.tensor(victim_model.get_denoised_embedding(image, id)).to(args['device'])
 
             file_path = f'task_1_modelstealing/data/emb/epoch_{epoch}_{id}.pt'
 
@@ -81,6 +84,13 @@ def train(args, dataset: TaskDataset, stealing_model: StealingModel, victim_mode
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx , len(dataset),
                     100. * batch_idx / len(dataset), loss.item()))
+                
+            
+            if batch_idx % args["check_noise_interval"] == 0:
+                image = sure_dataset.imgs[0]
+                embedding = sure_dataset.embeddings[0]
+                i = victim_model.estimate_noise(image, embedding)
+                print(f'{i} iterations to denoise')
 
             if (batch_idx + 1) % args["save_interval"]  == 0:
                 torch.onnx.export(
