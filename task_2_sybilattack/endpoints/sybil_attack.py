@@ -21,8 +21,8 @@ def sybil_attack(ids: List[int], home_or_defense: str, binary_or_affine: str):
     else:
         raise Exception(f"Request failed. Status code: {response.status_code}, content: {response.content}")
 
-
-api_ret = sybil_attack(ids=[101031],
-                 home_or_defense='home',
-                 binary_or_affine='affine')
-print(len(api_ret[0]))
+if __name__ == '__main__':
+    api_ret = sybil_attack(ids=[101031],
+                    home_or_defense='home',
+                    binary_or_affine='affine')
+    print(len(api_ret[0]))
