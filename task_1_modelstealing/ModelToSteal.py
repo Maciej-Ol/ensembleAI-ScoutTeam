@@ -1,5 +1,6 @@
 import torchvision.models as models
 import torch
+from endpoints.model_stealing import model_stealing
 
 class ModelToSteal:
     def get_embeddings(self, image):
@@ -25,6 +26,6 @@ class ModelToStealMockup(ModelToSteal):
         return self.model(image)
 
 class ModelToStealOfficial(ModelToSteal):
-    def get_embeddings(self, images):
-        # Here we should use API
-        pass
+    def get_embeddings(self, image):
+        result = model_stealing(image)
+        return result
