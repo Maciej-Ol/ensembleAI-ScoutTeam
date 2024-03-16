@@ -17,8 +17,12 @@ def sybil_attack(ids: List[int], home_or_defense: str, binary_or_affine: str):
     )
 
     if response.status_code == 200:
-        return json.loads(response.content.decode())["representation"]
+        return json.loads(response.content.decode())["representations"]
     else:
         raise Exception(f"Request failed. Status code: {response.status_code}, content: {response.content}")
 
-print(sybil_attack([101031],home_or_defense="defense",binary_or_affine="affine"))
+
+api_ret = sybil_attack(ids=[101031],
+                 home_or_defense='home',
+                 binary_or_affine='affine')
+print(len(api_ret[0]))
