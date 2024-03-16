@@ -1,4 +1,25 @@
 def main():
+    args = parse_args()
+    stealing_model = build_stealing_model(args)
+    train_loader = build_train_loader(args)
+    optimizer = build_optimizer(args)
+    loss_func = build_loss_func(args)
+
+    train
+
+def parse_args():
+    pass
+
+def build_stealing_model(args):
+    pass
+
+def build_train_loader(args):
+    pass
+
+def build_optimizer(args):
+    pass
+
+def build_loss_func(args):
     pass
 
 def train(args, train_loader, stealing_model, optimizer, loss_func):

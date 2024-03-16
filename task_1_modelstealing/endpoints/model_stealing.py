@@ -1,3 +1,5 @@
+import requests
+
 def model_stealing(path_to_png_file: str):
     SERVER_URL = "[paste server url here]"
     ENDPOINT = "/modelstealing"
