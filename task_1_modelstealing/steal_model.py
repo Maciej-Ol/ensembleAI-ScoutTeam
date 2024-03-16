@@ -1,26 +1,43 @@
+import torchvision.models as models
+import torch
+import torch.nn as nn
+
 def main():
     args = parse_args()
     stealing_model = build_stealing_model(args)
     train_loader = build_train_loader(args)
-    optimizer = build_optimizer(args)
+    optimizer = build_optimizer(args, stealing_model)
     loss_func = build_loss_func(args)
 
-    train
+    train(train_loader, stealing_model, optimizer, loss_func)
 
 def parse_args():
     pass
 
 def build_stealing_model(args):
-    pass
+    out_dim = 512
+    stealing_model = models.resnet50(pretrained=False, num_classes=out_dim)
+
+    return stealing_model
 
 def build_train_loader(args):
     pass
 
-def build_optimizer(args):
-    pass
+def build_optimizer(args, stealing_model):
+    lr = 0.1
+    momentum = 0.9
+    weight_decay = 0.0
+
+
+    return torch.optim.SGD(
+        stealing_model.parameters(),
+        lr,
+        momentum=momentum,
+        weight_decay=weight_decay,
+    )
 
 def build_loss_func(args):
-    pass
+    return nn.MSELoss().cuda(args.cuda)
 
 def train(args, train_loader, stealing_model, optimizer, loss_func):
     for epoch in range(args.epochs):
@@ -35,7 +52,6 @@ def train(args, train_loader, stealing_model, optimizer, loss_func):
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     100. * batch_idx / len(train_loader), loss.item()))
-
 
 if __name__ == "__main__":
     main()
