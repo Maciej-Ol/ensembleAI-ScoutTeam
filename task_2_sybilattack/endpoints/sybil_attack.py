@@ -1,4 +1,5 @@
 import requests
+from typing import List
 
 def sybil_attack(ids: List[int], home_or_defense: str, binary_or_affine: str):
     if home_or_defense not in ["home", "defense"] or binary_or_affine not in ["binary", "affine"]:

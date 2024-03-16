@@ -1,3 +1,5 @@
+import requests
+
 def sybil_attack_reset():
     SERVER_URL = "[paste server url here]"
     ENDPOINT = "/sybil/reset"
