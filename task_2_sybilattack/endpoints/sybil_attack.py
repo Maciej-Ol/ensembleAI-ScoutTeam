@@ -1,15 +1,16 @@
 import requests
 from typing import List
+import json
 
 def sybil_attack(ids: List[int], home_or_defense: str, binary_or_affine: str):
     if home_or_defense not in ["home", "defense"] or binary_or_affine not in ["binary", "affine"]:
         raise "Invalid endpoint"
-    
-    SERVER_URL = "[paste server url here]"
+
+    SERVER_URL = "http://34.71.138.79:9090"
     ENDPOINT = f"/sybil/{binary_or_affine}/{home_or_defense}"
     URL = SERVER_URL + ENDPOINT
     
-    TEAM_TOKEN = "[paste your team token here]"
+    TEAM_TOKEN = "l5pvMfL4ZID1QHmn"
     ids = ids = ",".join(map(str, ids))
 
     response = requests.get(
@@ -17,6 +18,8 @@ def sybil_attack(ids: List[int], home_or_defense: str, binary_or_affine: str):
     )
 
     if response.status_code == 200:
-        return response.content["representations"]
+        return json.loads(response.content.decode())["representation"]
     else:
         raise Exception(f"Request failed. Status code: {response.status_code}, content: {response.content}")
+
+print(sybil_attack([101031],home_or_defense="defense",binary_or_affine="affine"))
