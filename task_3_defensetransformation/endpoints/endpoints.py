@@ -13,66 +13,8 @@ import os
 
 load_dotenv()
 
-SERVER_URL = os.getenv("SERVER_URL")
-TEAM_TOKEN = os.getenv("TEAM_TOKEN")
-
-
-def sybil(ids: List[int], home_or_defense: str, binary_or_affine: str):
-    if home_or_defense not in ["home", "defense"] or binary_or_affine not in [
-        "binary",
-        "affine",
-    ]:
-        raise Exception("Invalid endpoint")
-
-    endpoint = f"/sybil/{binary_or_affine}/{home_or_defense}"
-    url = SERVER_URL + endpoint
-    ids = ",".join(map(str, ids))
-    response = requests.get(url, params={"ids": ids}, headers={"token": TEAM_TOKEN})
-    if response.status_code == 200:
-        representations = response.json()["representations"]
-        ids = response.json()["ids"]
-        print("Request ok", representations, ids)
-    else:
-        raise Exception(
-            f"Sybil failed. Code: {response.status_code}, content: {response.json()}"
-        )
-
-
-# Be careful. This can be done only 4 times an hour.
-# Make sure your file has proper content.
-def sybil_submit(path_to_npz_file: str, binary_or_affine: str):
-    if binary_or_affine not in ["binary", "affine"]:
-        raise Exception("Invalid endpoint")
-
-    endpoint = f"/sybil/{binary_or_affine}/submit"
-    url = SERVER_URL + endpoint
-
-    with open(path_to_npz_file, "rb") as f:
-        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN})
-
-    if response.status_code == 200:
-        print("OK")
-        print(response.json())
-    else:
-        print(
-            f"Request submit failed. Status code: {response.status_code}, content: {response.json()}"
-        )
-
-
-def sybil_reset(binary_or_affine: str):
-    if binary_or_affine not in ["binary", "affine"]:
-        raise Exception("Invalid endpoint")
-
-    endpoint = f"/sybil/{binary_or_affine}/reset"
-    url = SERVER_URL + endpoint
-    response = requests.post(url, headers={"token": TEAM_TOKEN})
-    if response.status_code == 200:
-        print("Request ok")
-        print(response.json())
-    else:
-        raise Exception(
-            f"Sybil reset failed. Code: {response.status_code}, content: {response.json()}"
-        )
+SERVER_URL = os.getenv("http://34.71.138.79:9090")
+TEAM_TOKEN = os.getenv("l5pvMfL4ZID1QHmn")
 
 
 # Be careful. This can be done only once an hour.
@@ -90,49 +32,6 @@ def defense_submit(path_to_npz_file: str):
             raise Exception(
                 f"Defense submit failed. Code: {response.status_code}, content: {response.json()}"
             )
-
-
-def model_stealing(path_to_png_file: str):
-    endpoint = "/modelstealing"
-    url = SERVER_URL + endpoint
-    with open(path_to_png_file, "rb") as f:
-        response = requests.get(url, files={"file": f}, headers={"token": TEAM_TOKEN})
-        if response.status_code == 200:
-            representation = response.json()["representation"]
-            print("Request ok")
-            print(representation)
-        else:
-            raise Exception(
-                f"Model stealing failed. Code: {response.status_code}, content: {response.json()}"
-            )
-
-
-def model_stealing_submit(path_to_onnx_file: str):
-    endpoint = "/modelstealing/submit"
-    url = SERVER_URL + endpoint
-    with open(path_to_onnx_file, "rb") as f:
-        response = requests.post(url, files={"file": f}, headers={"token": TEAM_TOKEN})
-        if response.status_code == 200:
-            print("Request ok")
-            print(response.json())
-        else:
-            raise Exception(
-                f"Model stealing submit failed. Code: {response.status_code}, content: {response.json()}"
-            )
-
-
-def model_stealing_reset():
-    endpoint = f"/modelstealing/reset"
-    url = SERVER_URL + endpoint
-    response = requests.post(url, headers={"token": TEAM_TOKEN})
-    if response.status_code == 200:
-        print("Request ok")
-        print(response.json())
-    else:
-        raise Exception(
-            f"Model stealing reset failed. Code: {response.status_code}, content: {response.json()}"
-        )
-
 
 # Call examples:
 
