@@ -11,8 +11,8 @@ import os
 
 load_dotenv()
 
-SERVER_URL = os.getenv("SERVER_URL")
-TEAM_TOKEN = os.getenv("TEAM_TOKEN")
+SERVER_URL = "http://34.71.138.79:9090"
+TEAM_TOKEN = "l5pvMfL4ZID1QHmn"
 
 
 def sybil(ids: List[int], home_or_defense: str, binary_or_affine: str):
