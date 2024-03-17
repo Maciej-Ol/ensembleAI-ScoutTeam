@@ -13,10 +13,9 @@ def defense_submit(path_to_npz_file: str):
         if response.status_code == 200:
             print("Request ok")
             print(response.json())
+            answer = f"Request ok, response: {response.json()}"
         else:
-            raise Exception(
-                f"Defense submit failed. Code: {response.status_code}, content: {response.json()}"
-            )
+            answer = f"Defense submit failed. Code: {response.status_code}, content: {response.json()}"
     return response.json()
 
 
@@ -48,25 +47,25 @@ def save_file(st):
         representations=rep
     )
 
-def save_response(response):
+def save_response(response, i):
     # Append the parameter to a text file
-    output_file = "data/output.txt"  # Name of the output text file
+    output_file = "task_3_defensetransformation/data/output.txt"  # Name of the output text file
     with open(output_file, mode='a') as file:
         file.write(response + "\n")
-        file.write("Step: "+a + "\n")
+        file.write("Step: "+i + "\n")
 
 
 
 
 if __name__ == "__main__":
-    list = [0.1, 0.2, 0.05, 0.3, 0.4, 0.5, 0.6]
+    list = [0.1, 0.2, 0.05, 0.15, 0.3, 0.4, 0.5]
 
     for i in list:
         save_file(i)
         respone = defense_submit("task_3_defensetransformation/data/example_submission.npz")
         save_response(respone, i)
         print("I have finished defense_submit successfully!")
-        time.sleep(4000)  # Sleep for 4000 seconds (about 1 hour)
+        time.sleep(3660)  # Sleep for 4000 seconds (about 1 hour)
 
 
 
