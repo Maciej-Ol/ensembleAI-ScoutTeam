@@ -1,9 +1,13 @@
+from PIL import Image
+import requests
+from io import BytesIO
+    
 def model_stealing(path_to_png_file: str):
-    SERVER_URL = "[paste server url here]"
+    SERVER_URL = "http://34.71.138.79:9090"
     ENDPOINT = "/modelstealing"
     URL = SERVER_URL + ENDPOINT
 
-    TEAM_TOKEN = "[paste your team token here]"
+    TEAM_TOKEN = "l5pvMfL4ZID1QHmn"
 
     with open(path_to_png_file, "rb") as img_file:
         response = requests.get(
@@ -14,3 +18,4 @@ def model_stealing(path_to_png_file: str):
             return response.content["representation"]
         else:
             raise Exception(f"Request failed. Status code: {response.status_code}, content: {response.content}")
+        
