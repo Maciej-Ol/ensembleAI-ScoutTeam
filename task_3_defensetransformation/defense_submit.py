@@ -1,9 +1,6 @@
 import numpy as np
 import requests
-import os
-import sys
-
-
+import time
 
 SERVER_URL = "http://34.71.138.79:9090"
 TEAM_TOKEN = "l5pvMfL4ZID1QHmn"
@@ -39,7 +36,7 @@ def apply_defense_transformation_3(X,padding_size=100,st=0.3):
 
 
 def save_file(st):
-    data_sub = np.load("data/DefenseTransformationSubmit.npz")
+    data_sub = np.load("task_3_defensetransformation/data/DefenseTransformationSubmit.npz")
     rep = apply_defense_transformation_3(data_sub["representations"],st=st)
 
     # Convert from float64 to float32                                
@@ -47,7 +44,7 @@ def save_file(st):
                                     
     # Apply defense transformation (e.g., your transformation)
     np.savez(
-        "data/example_submission.npz",
+        "task_3_defensetransformation/data/example_submission.npz",
         representations=rep
     )
 
@@ -62,21 +59,15 @@ def save_response(response):
 
 
 if __name__ == "__main__":
-    # Access command-line arguments
-    if len(sys.argv) < 2:
-        print("Usage: python your_script.py <parameter>")
-        sys.exit(1)
+    list = [0.1, 0.2, 0.05, 0.3, 0.4, 0.5, 0.6]
 
-    # Extract the parameter
-    parameter = sys.argv[1]
+    for i in list:
+        save_file(i)
+        respone = defense_submit("task_3_defensetransformation/data/example_submission.npz")
+        save_response(respone, i)
+        print("I have finished defense_submit successfully!")
+        time.sleep(4000)  # Sleep for 4000 seconds (about 1 hour)
 
-    # list
-    list = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-    a = list[int(parameter)]
 
-    save_file(a)
-    respone = defense_submit("data/example_submission.npz")
-    save_response(respone, a)
 
-    # Now you can use the parameter in your script as needed
-    print("Parameter passed from Bash script:", parameter)
+    
