@@ -1,3 +1,5 @@
 Server down. Exception: HTTPConnectionPool(host='34.71.138.79', port=9090): Max retries exceeded with url: /defense/submit (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7b6839c6d4d0>: Failed to establish a new connection: [Errno 111] Connection refused'))
 Server down. Exception: HTTPConnectionPool(host='34.71.138.79', port=9090): Max retries exceeded with url: /defense/submit (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x74b275388610>: Failed to establish a new connection: [Errno 111] Connection refused'))
 Step: 0.1
+Server down. Exception: HTTPConnectionPool(host='34.71.138.79', port=9090): Max retries exceeded with url: /defense/submit (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x74b275323850>: Failed to establish a new connection: [Errno 111] Connection refused'))
+Step: 0.2
