@@ -16,7 +16,7 @@ import sys
 
 sys.path.append(os.path.join(os.getcwd(), "task_2_sybilattack/"))
 
-from endpoints.requests import sybil, sybil_reset
+from task_2_sybilattack_affine.endpoints.requests2 import sybil, sybil_reset
 
 def main(config):
     print(os.getcwd())
