@@ -1,3 +1,12 @@
+task_1_modelstealing/data
+task_1_modelstealing/data/*
+task_1_modelstealing/data_steal
+task_1_modelstealing/models
+task_1_modelstealing/simsiam
+
+hack29.bin
+hack29.pub
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
