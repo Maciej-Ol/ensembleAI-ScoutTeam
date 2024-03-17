@@ -5,6 +5,9 @@ from ModelToSteal import ModelToSteal, ModelToStealMockup, ModelToStealOfficial,
 from torchvision import transforms
 from taskdataset import TaskDataset
 from sure_taskdataset import SureTaskDataset
+import os
+
+from PIL import Image
 
 import torch.nn.functional as F
 
@@ -43,6 +46,37 @@ def build_datasets(args):
 
     return dataset, sure_dataset
 
+def build_datasets2(args):
+
+    # Directory paths
+    image_dir = "data/images"
+    emb_dir = "data/emb"
+
+    # List to store images and tensors
+    image_list = []
+    tensor_list = []
+
+    # Load images from the image directory
+    for filename in os.listdir(image_dir):
+        if filename.endswith(".png"):
+            image_path = os.path.join(image_dir, filename)
+            image = Image.open(image_path)
+            image_list.append(image)
+
+    # Load tensors from the embedding directory
+    for filename in os.listdir(emb_dir):
+        if filename.endswith(".pt"):
+            tensor_path = os.path.join(emb_dir, filename)
+            tensor = torch.load(tensor_path)
+            tensor_list.append(tensor)
+
+    dataset: TaskDataset = torch.load("task_1_modelstealing/data/ModelStealingPub.pt")
+    dataset.transform = transforms.Compose([transforms.ToTensor()])
+
+    sure_dataset: SureTaskDataset = torch.load("task_1_modelstealing/data/sure/sure.pt")
+
+    return dataset, sure_dataset
+
 def build_optimizer(args, stealing_model):
     lr = 0.1
     momentum = 0.9
@@ -59,21 +93,26 @@ def build_loss_func(args):
     return nn.MSELoss()
     # return nn.MSELoss().to(args['device'])
 
-def train(args: int, dataset: TaskDataset, sure_dataset, stealing_model: StealingModel, victim_model: ModelToSteal, optimizer, loss_func):
+def train(args: int, dataset: TaskDataset, sure_dataset, stealing_model: StealingModel, victim_model: ModelToStealOfficial, optimizer, loss_func):
     stealing_model.train()
+
+    saved_data = {
+        'ids': [],
+        'images': [],
+        'embeddings': []
+    }
+
     print("start training")
     for epoch in range(args["epochs"]):
         print(f"start epoch {epoch}")
         for batch_idx, (id, image, transformed_img, label) in enumerate(dataset):
-            if batch_idx > 200:
-                break
+            # if batch_idx > 200:
+            #     break
             # image = image.to(args.device)
             image = image.convert("RGB")
             # embbeding = torch.tensor(victim_model.get_embeddings(image, id)).to(args['device'])
-            print(f"start get denoised")
             # embbeding = torch.tensor(victim_model.get_denoised_embedding(image, id)).to(args['device'])
             embbeding = torch.tensor(victim_model.get_embeddings(image, id)).to(args['device'])
-            print(f"end get denoised")
 
             file_path = f'task_1_modelstealing/data/emb/epoch_{epoch}_{id}.pt'
 
@@ -88,6 +127,11 @@ def train(args: int, dataset: TaskDataset, sure_dataset, stealing_model: Stealin
             # loss = F.nll_loss(output, embbeding)
             loss.backward()
             optimizer.step()
+
+            saved_data["embeddings"].append(embbeding)
+            saved_data["ids"].append(id)
+            saved_data["images"].append(image)
+
             if batch_idx % args["log_interval"] == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx , len(dataset),
@@ -108,12 +152,15 @@ def train(args: int, dataset: TaskDataset, sure_dataset, stealing_model: Stealin
                     export_params=True,
                     input_names=["x"],
                 )
-        torch.onnx.export(
-            stealing_model,
-            torch.randn(1, 3, 32, 32),
-            f"task_1_modelstealing/modelstealing/models/submission{epoch}.onnx",
-            export_params=True,
-            input_names=["x"],
-        )
+                file_path = f"./task_1_modelstealing/data/trained_{epoch}_{batch_idx}.pt"
+                torch.save(saved_data, file_path)
+
+        # torch.onnx.export(
+        #     stealing_model,
+        #     torch.randn(1, 3, 32, 32),
+        #     f"task_1_modelstealing/models/submission{epoch}.onnx",
+        #     export_params=True,
+        #     input_names=["x"],
+        # )
 if __name__ == "__main__":
     main()

@@ -144,5 +144,5 @@ def model_stealing_reset():
 # sybil_reset("binary")
 # defense_submit("exampletransform.npz")
 # print(model_stealing("task_1_modelstealing\\data\\images\\0.png"))
-# model_stealing_submit("task_1_modelstealing/models/submission_2999_0.onnx")
-model_stealing_reset()
+model_stealing_submit("task_1_modelstealing/models/submission_299_4.onnx")
+# model_stealing_reset()

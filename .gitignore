@@ -1,3 +1,9 @@
+task_1_modelstealing/data/emb
+task_1_modelstealing/data/images
+task_1_modelstealing/models/*
+task_1_modelstealing/models
+task1venv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

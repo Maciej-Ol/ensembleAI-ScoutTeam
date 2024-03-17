@@ -15,7 +15,7 @@ class StealingModel(nn.Module):
         #                     "resnet34":  models.resnet34(pretrained=False, num_classes=out_dim)
         #                     ,"resnet50": models.resnet50(pretrained=False, num_classes=out_dim)}
 
-        self.backbone = models.resnet18(weights=None)
+        self.backbone = models.resnet50(weights=None)
         self.backbone.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.backbone.fc = nn.Linear(2048, 512)
 
@@ -106,9 +106,9 @@ class NeuralNetwork(nn.Module):
         return features
 
 # Example usage
-model = NeuralNetwork()
-model.to("cuda")
-input_tensor = torch.randn(1, 3, 32, 32).to("cuda")  # Example input tensor (batch_size, channels, height, width)
-# input_tensor = torch.randn(1, 3, 32, 32)  # Example input tensor (batch_size, channels, height, width)
-output_features = model(input_tensor)
-print(output_features.shape) 
+# model = NeuralNetwork()
+# model.to("cuda")
+# input_tensor = torch.randn(1, 3, 32, 32).to("cuda")  # Example input tensor (batch_size, channels, height, width)
+# # input_tensor = torch.randn(1, 3, 32, 32)  # Example input tensor (batch_size, channels, height, width)
+# output_features = model(input_tensor)
+# print(output_features.shape) 
