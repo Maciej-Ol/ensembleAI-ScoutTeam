@@ -49,11 +49,11 @@ def main(config):
 
     criterion = nn.MSELoss()
     batch_size = 32
-    epochs = 1
+    epochs = 10
     lr = 0.001
 
     if config.dataset == 'test':
-        folder = os.path.join('task_2_sybilattack/data', config.dataset, config.task, str(config.num))
+        folder = os.path.join('task_2_sybilattack_affine/data', config.dataset, config.task, str(config.num))
         with open(f'{folder}/A_train', 'rb') as f:
             A_train_reps = pkl.load(f)
         with open(f'{folder}/B_train', 'rb') as f:
@@ -102,8 +102,9 @@ def main(config):
         preds = []
         ids = []
 
-        for i in range(1):
-            folder = os.path.join('task_2_sybilattack/data', config.dataset, config.task, str(config.num), f'partition_{i}')
+        for i in range(10):
+            print(f"big loop: {i}")
+            folder = os.path.join('task_2_sybilattack_affine/data', config.dataset, config.task, str(config.num), f'partition_{i}')
             with open(f'{folder}/A_train', 'rb') as f:
                 A_train_reps = pkl.load(f)
             with open(f'{folder}/B_train', 'rb') as f:
@@ -152,16 +153,16 @@ def main(config):
 
         id_rep_map = {id: rep for id, rep in zip(ids, preds)}
         
-        dataset = torch.load("task_2_sybilattack/data/SybilAttack.pt")
-        # representations = [id_rep_map[id] for id in dataset.ids]
+        dataset = torch.load("task_2_sybilattack_affine/data/SybilAttack.pt")
+        representations = [id_rep_map[id] for id in dataset.ids]
 
-        np.savez("task_2_sybilattack/task2_submission.npz", ids=dataset.ids, representations=preds)
+        np.savez("task_2_sybilattack_affine/task2_submission.npz", ids=dataset.ids, representations=representations)
         
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--num', type=int, default=0, help='unique number not to overwrite datasets')
+    parser.add_argument('--num', type=int, default=1, help='unique number not to overwrite datasets')
     parser.add_argument('--task', type=str, default='affine', help='binary or affine')
     parser.add_argument('--dataset', type=str, default='submit', help='test or submit')
     

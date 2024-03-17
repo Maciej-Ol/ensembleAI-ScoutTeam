@@ -140,7 +140,7 @@ def model_stealing_reset():
 #     "home",
 #     "affine",
 # )
-# sybil_submit("examplesubmission.npz", "binary")
+sybil_submit(binary_or_affine='affine', path_to_npz_file='task_2_sybilattack_affine/task2_submission60.npz')
 # sybil_reset("binary")
 # defense_submit("exampletransform.npz")
 # model_stealing("testing/test.png")
